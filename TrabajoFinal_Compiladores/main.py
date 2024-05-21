@@ -16,6 +16,8 @@ def compute_first(productions):
                         if symbol in productions:
                             before_update = len(first[non_terminal])
                             first[non_terminal].update(first[symbol] - {'epsilon'})
+                            if len(first[non_terminal]) > before_update:
+                                updated = True
                             if 'epsilon' not in first[symbol]:
                                 break
                         else:
@@ -37,19 +39,7 @@ def compute_follow(productions, first):
     start_symbol = next(iter(productions))
     follow[start_symbol].add('$')
 
-    def first_of_string(string):
-        result = set()
-        for symbol in string:
-            symbol_first = first[symbol] if symbol in productions else {symbol}
-            result.update(symbol_first - {'epsilon'})
-            if 'epsilon' not in symbol_first:
-                break
-        else:
-            result.add('epsilon')
-        return result
-
-    updated = True
-    while updated:
+    while True:
         updated = False
         for non_terminal, rules in productions.items():
             for rule in rules:
@@ -67,6 +57,8 @@ def compute_follow(productions, first):
                             follow_temp = first[symbol]
                     else:
                         follow_temp = {symbol}
+        if not updated:
+            break
 
     return follow
 
