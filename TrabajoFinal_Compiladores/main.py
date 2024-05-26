@@ -1,4 +1,5 @@
 import os
+import re
 
 def computar_pr(producciones):
     primero = {no_terminal: set() for no_terminal in producciones}
@@ -76,11 +77,13 @@ def computar_primero_alternas(producciones):
                         primero[no_terminal].add('epsilon')
                         actualizado = True
                 else:
-                    for simbolo in produccion.split():
+                    # Separa los símbolos considerando los paréntesis como entidades independientes
+                    simbolos = re.findall(r'\w+|[()]', produccion)
+                    for simbolo in simbolos:
                         if simbolo in producciones:
-                            anterior = len(primero[no_terminal])
+                            antes = len(primero[no_terminal])
                             primero[no_terminal].update(primero[simbolo] - {'epsilon'})
-                            if len(primero[no_terminal]) > anterior:
+                            if len(primero[no_terminal]) > antes:
                                 actualizado = True
                             if 'epsilon' not in primero[simbolo]:
                                 break
@@ -98,7 +101,6 @@ def computar_primero_alternas(producciones):
 
     return primero
 
-
 def computar_siguiente_alternas(producciones, primero):
     siguiente = {no_terminal: set() for no_terminal in producciones}
     simbolo_inicio = next(iter(producciones))
@@ -109,7 +111,8 @@ def computar_siguiente_alternas(producciones, primero):
         for no_terminal, reglas in producciones.items():
             for regla in reglas:
                 siguiente_temporal = siguiente[no_terminal].copy()
-                simbolos = regla.split()
+                # Separa los símbolos considerando los paréntesis como entidades independientes
+                simbolos = re.findall(r'\w+|[()]', regla)
                 for i in range(len(simbolos) - 1, -1, -1):
                     simbolo = simbolos[i]
                     if simbolo in producciones:
