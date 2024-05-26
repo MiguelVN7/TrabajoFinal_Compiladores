@@ -1,118 +1,184 @@
 import os
 
-def compute_first(productions):
-    first = {non_terminal: set() for non_terminal in productions}
+def computar_pr(producciones):
+    primero = {no_terminal: set() for no_terminal in producciones}
 
     while True:
-        updated = False
-        for non_terminal in productions:
-            for production in productions[non_terminal]:
-                if production == 'epsilon':
-                    if 'epsilon' not in first[non_terminal]:
-                        first[non_terminal].add('epsilon')
-                        updated = True
+        actualizado = False
+        for no_terminal in producciones:
+            for produccion in producciones[no_terminal]:
+                if produccion == 'epsilon':
+                    if 'epsilon' not in primero[no_terminal]:
+                        primero[no_terminal].add('epsilon')
+                        actualizado = True
                 else:
-                    for symbol in production:
-                        if symbol in productions:
-                            before_update = len(first[non_terminal])
-                            first[non_terminal].update(first[symbol] - {'epsilon'})
-                            if len(first[non_terminal]) > before_update:
-                                updated = True
-                            if 'epsilon' not in first[symbol]:
+                    for simbolo in produccion:
+                        if simbolo in producciones:
+                            antes = len(primero[no_terminal])
+                            primero[no_terminal].update(primero[simbolo] - {'epsilon'})
+                            if len(primero[no_terminal]) > antes:
+                                actualizado = True
+                            if 'epsilon' not in primero[simbolo]:
                                 break
                         else:
-                            if symbol not in first[non_terminal]:
-                                first[non_terminal].add(symbol)
-                                updated = True
+                            if simbolo not in primero[no_terminal]:
+                                primero[no_terminal].add(simbolo)
+                                actualizado = True
                             break
                     else:
-                        if 'epsilon' not in first[non_terminal]:
-                            first[non_terminal].add('epsilon')
-                            updated = True
-        if not updated:
+                        if 'epsilon' not in primero[no_terminal]:
+                            primero[no_terminal].add('epsilon')
+                            actualizado = True
+        if not actualizado:
             break
 
-    return first
+    return primero
 
-def compute_follow(productions, first):
-    follow = {non_terminal: set() for non_terminal in productions}
-    start_symbol = next(iter(productions))
-    follow[start_symbol].add('$')
+
+def computar_sig(producciones, primero):
+    siguiente = {no_terminal: set() for no_terminal in producciones}
+    simbolo_inicio = next(iter(producciones))
+    siguiente[simbolo_inicio].add('$')
 
     while True:
-        updated = False
-        for non_terminal, rules in productions.items():
-            for rule in rules:
-                follow_temp = follow[non_terminal].copy()
-                for i in range(len(rule) - 1, -1, -1):
-                    symbol = rule[i]
-                    if symbol in productions:
-                        before_update = follow[symbol].copy()
-                        follow[symbol].update(follow_temp)
-                        if follow[symbol] != before_update:
-                            updated = True
-                        if 'epsilon' in first[symbol]:
-                            follow_temp = follow_temp.union(first[symbol] - {'epsilon'})
+        actualizado = False
+        for no_terminal, reglas in producciones.items():
+            for regla in reglas:
+                siguiente_temporal = siguiente[no_terminal].copy()
+                for i in range(len(regla) - 1, -1, -1):
+                    simbolo = regla[i]
+                    if simbolo in producciones:
+                        anterior = siguiente[simbolo].copy()
+                        siguiente[simbolo].update(siguiente_temporal)
+                        if siguiente[simbolo] != anterior:
+                            actualizado = True
+                        if 'epsilon' in primero[simbolo]:
+                            siguiente_temporal = siguiente_temporal.union(primero[simbolo] - {'epsilon'})
                         else:
-                            follow_temp = first[symbol]
+                            siguiente_temporal = primero[simbolo]
                     else:
-                        follow_temp = {symbol}
-        if not updated:
+                        siguiente_temporal = {simbolo}
+        if not actualizado:
             break
 
-    return follow
+    return siguiente
+
+
+def computar_primero_alternas(producciones):
+    primero = {no_terminal: set() for no_terminal in producciones}
+
+    while True:
+        actualizado = False
+        for no_terminal in producciones:
+            for produccion in producciones[no_terminal]:
+                if produccion == 'epsilon':
+                    if 'epsilon' not in primero[no_terminal]:
+                        primero[no_terminal].add('epsilon')
+                        actualizado = True
+                else:
+                    for simbolo in produccion.split():
+                        if simbolo in producciones:
+                            anterior = len(primero[no_terminal])
+                            primero[no_terminal].update(primero[simbolo] - {'epsilon'})
+                            if len(primero[no_terminal]) > anterior:
+                                actualizado = True
+                            if 'epsilon' not in primero[simbolo]:
+                                break
+                        else:
+                            if simbolo not in primero[no_terminal]:
+                                primero[no_terminal].add(simbolo)
+                                actualizado = True
+                            break
+                    else:
+                        if 'epsilon' not in primero[no_terminal]:
+                            primero[no_terminal].add('epsilon')
+                            actualizado = True
+        if not actualizado:
+            break
+
+    return primero
+
+
+def computar_siguiente_alternas(producciones, primero):
+    siguiente = {no_terminal: set() for no_terminal in producciones}
+    simbolo_inicio = next(iter(producciones))
+    siguiente[simbolo_inicio].add('$')
+
+    while True:
+        actualizado = False
+        for no_terminal, reglas in producciones.items():
+            for regla in reglas:
+                siguiente_temporal = siguiente[no_terminal].copy()
+                simbolos = regla.split()
+                for i in range(len(simbolos) - 1, -1, -1):
+                    simbolo = simbolos[i]
+                    if simbolo in producciones:
+                        anterior = siguiente[simbolo].copy()
+                        siguiente[simbolo].update(siguiente_temporal)
+                        if siguiente[simbolo] != anterior:
+                            actualizado = True
+                        if 'epsilon' in primero[simbolo]:
+                            siguiente_temporal = siguiente_temporal.union(primero[simbolo] - {'epsilon'})
+                        else:
+                            siguiente_temporal = primero[simbolo]
+                    else:
+                        siguiente_temporal = {simbolo}
+        if not actualizado:
+            break
+
+    return siguiente
+
 
 def main():
-    input_path = 'C:/Users/Miguel/PycharmProjects/TrabajoFinal_Compiladores/glcs.in'
-    output_path = 'C:/Users/Miguel/PycharmProjects/TrabajoFinal_Compiladores/pr_sig.out'
+    entrada = 'C:/Users/Miguel/PycharmProjects/TrabajoFinal_Compiladores/glcs.in'
+    salida = 'C:/Users/Miguel/PycharmProjects/TrabajoFinal_Compiladores/pr_sig.out'
 
-    if not os.path.exists(input_path):
-        print(f"Error: El archivo de entrada {input_path} no existe.")
+    if not os.path.exists(entrada):
+        print(f"Error: El archivo de entrada {entrada} no existe.")
         return
 
     try:
-        with open(input_path, 'r') as infile:
-            cases = int(infile.readline().strip())
-            print(f"Número de casos: {cases}")
-            results = []
+        with open(entrada, 'r') as infile:
+            casos = int(infile.readline().strip())
+            resultados = []
 
-            for case_num in range(cases):
+            for caso_numero in range(casos):
                 k = int(infile.readline().strip())
-                print(f"\nNúmero de no terminales para el caso {case_num + 1}: {k}")
-                productions = {}
+                producciones = {}
                 for _ in range(k):
-                    line = infile.readline().strip()
-                    print(f"Producción: {line}")
-                    non_terminal, expr = line.split('->')
-                    non_terminal = non_terminal.strip()
-                    alternatives = [alt.strip() for alt in expr.split('|')]
-                    productions[non_terminal] = alternatives
+                    linea = infile.readline().strip()
+                    no_terminal, prod = linea.split('->')
+                    no_terminal = no_terminal.strip()
+                    alternativas = [alt.strip() for alt in prod.split('|')]
+                    producciones[no_terminal] = alternativas
 
-                print(f"Producciones para el caso {case_num + 1}: {productions}")
-                first = compute_first(productions)
-                print(f"Conjuntos Primero para el caso {case_num + 1}: {first}")
-                follow = compute_follow(productions, first)
-                print(f"Conjuntos Siguiente para el caso {case_num + 1}: {follow}")
+                if all(no_terminal.isupper() for no_terminal in producciones):
+                    primero = computar_pr(producciones)
+                    siguiente = computar_sig(producciones, primero)
+                elif all((len(no_terminal) > 1) for no_terminal in producciones):
+                    primero = computar_primero_alternas(producciones)
+                    siguiente = computar_siguiente_alternas(producciones, primero)
 
-                result = []
-                result.append(f"{k}")
-                for non_terminal in productions:
-                    first_set = ', '.join(sorted(first[non_terminal]))
-                    result.append(f"Pr({non_terminal}) = {{{first_set}}}")
-                for non_terminal in productions:
-                    follow_set = ', '.join(sorted(follow[non_terminal]))
-                    result.append(f"Sig({non_terminal}) = {{{follow_set}}}")
-                results.append(result)
+                resultado = []
+                resultado.append(f"{k}")
+                for no_terminal in producciones:
+                    conjunto_primero = ', '.join(sorted(primero[no_terminal]))
+                    resultado.append(f"Pr({no_terminal}) = {{{conjunto_primero}}}")
+                for no_terminal in producciones:
+                    follow_set = ', '.join(sorted(siguiente[no_terminal]))
+                    resultado.append(f"Sig({no_terminal}) = {{{follow_set}}}")
+                resultados.append(resultado)
 
-        with open(output_path, 'w') as outfile:
-            outfile.write(f"{cases}\n")
-            for result in results:
-                outfile.write('\n'.join(result) + '\n')
+        with open(salida, 'w') as outfile:
+            outfile.write(f"{casos}\n")
+            for resultado in resultados:
+                outfile.write('\n'.join(resultado) + '\n')
 
-        print(f"\nEl archivo de salida se ha generado correctamente en {output_path}")
+        print(f"\nEl archivo de salida se ha generado correctamente en {salida}")
 
     except Exception as e:
         print(f"Error: {e}")
+
 
 if __name__ == "__main__":
     main()
