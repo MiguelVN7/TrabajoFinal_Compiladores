@@ -187,8 +187,8 @@ def computar_siguiente_alternas(producciones, primero):
 # Función principal del programa
 def main():
     try:
-        entrada = "glcs.in"  # Nombre del archivo de entrada
-        salida = "pr_sig.out"  # Nombre del archivo de salida
+        entrada = 'C:/Users/Miguel/PycharmProjects/TrabajoFinal_Compiladores/glcs.in'  # Nombre del archivo de entrada
+        salida = 'C:/Users/Miguel/PycharmProjects/TrabajoFinal_Compiladores/pr_sig.out'  # Nombre del archivo de salida
 
         # Verifica si el archivo de entrada existe
         if not os.path.exists(entrada):
