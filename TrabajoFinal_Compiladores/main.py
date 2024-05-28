@@ -217,7 +217,7 @@ def main():
                     alternativas = [alt.strip() for alt in prod.split('|')]
                     producciones[no_terminal] = alternativas
 
-                # Determina el tipo de producciones y calcula 'Primero' y 'Siguiente' en consecuencia
+                # Determina el tipo de producciones y calcula 'Primero' y 'Siguiente' en dependiendo del tipo de gramatica
                 if all(no_terminal.isupper() for no_terminal in producciones):
                     primero = computar_pr(producciones)
                     siguiente = computar_sig(producciones, primero)
