@@ -2,17 +2,21 @@ import os
 import re
 
 def computar_pr(producciones):
+    # Inicializa el conjunto primero para cada no terminal
     primero = {no_terminal: set() for no_terminal in producciones}
 
+    # Bucle para actualizar los conjuntos primero hasta que no haya cambios
     while True:
         actualizado = False
         for no_terminal in producciones:
             for produccion in producciones[no_terminal]:
+                # Caso especial para producciones que derivan directamente en epsilon
                 if produccion == 'epsilon':
                     if 'epsilon' not in primero[no_terminal]:
                         primero[no_terminal].add('epsilon')
                         actualizado = True
                 else:
+                    # Itera sobre los símbolos de la producción
                     for simbolo in produccion:
                         if simbolo in producciones:
                             antes = len(primero[no_terminal])
@@ -35,17 +39,19 @@ def computar_pr(producciones):
 
     return primero
 
-
 def computar_sig(producciones, primero):
+    # Inicializa el conjunto siguiente para cada no terminal
     siguiente = {no_terminal: set() for no_terminal in producciones}
     simbolo_inicio = next(iter(producciones))
     siguiente[simbolo_inicio].add('$')
 
+    # Bucle para actualizar los conjuntos siguiente hasta que no haya cambios
     while True:
         actualizado = False
         for no_terminal, reglas in producciones.items():
             for regla in reglas:
                 siguiente_temporal = siguiente[no_terminal].copy()
+                # Calcula el conjunto siguiente para cada símbolo de la regla de derecha a izquierda
                 for i in range(len(regla) - 1, -1, -1):
                     simbolo = regla[i]
                     if simbolo in producciones:
@@ -63,6 +69,11 @@ def computar_sig(producciones, primero):
             break
 
     return siguiente
+
+
+# Las funciones computar_primero_alternas y computar_siguiente_alternas son variantes de las funciones
+# anteriores que utilizan una expresión regular para tratar los símbolos que están entre paréntesis como
+# entidades independientes, útiles para gramáticas más complejas con símbolos no terminales compuestos.
 
 
 def computar_primero_alternas(producciones):
@@ -136,10 +147,12 @@ def main():
     entrada = 'C:/Users/Miguel/PycharmProjects/TrabajoFinal_Compiladores/glcs.in'
     salida = 'C:/Users/Miguel/PycharmProjects/TrabajoFinal_Compiladores/pr_sig.out'
 
+    # Comprueba si el archivo de entrada existe
     if not os.path.exists(entrada):
         print(f"Error: El archivo de entrada {entrada} no existe.")
         return
 
+    # Procesamiento de las gramáticas del archivo de entrada
     try:
         with open(entrada, 'r') as infile:
             casos = int(infile.readline().strip())
@@ -155,6 +168,7 @@ def main():
                     alternativas = [alt.strip() for alt in prod.split('|')]
                     producciones[no_terminal] = alternativas
 
+                # Distingue entre gramáticas simples y compuestas para aplicar el método adecuado
                 if all(no_terminal.isupper() for no_terminal in producciones):
                     primero = computar_pr(producciones)
                     siguiente = computar_sig(producciones, primero)
@@ -162,6 +176,7 @@ def main():
                     primero = computar_primero_alternas(producciones)
                     siguiente = computar_siguiente_alternas(producciones, primero)
 
+                # Prepara los resultados para escribir en el archivo de salida
                 resultado = []
                 resultado.append(f"{k}")
                 for no_terminal in producciones:
@@ -181,7 +196,6 @@ def main():
 
     except Exception as e:
         print(f"Error: {e}")
-
 
 if __name__ == "__main__":
     main()
