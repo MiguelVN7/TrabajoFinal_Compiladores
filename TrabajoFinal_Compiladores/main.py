@@ -112,7 +112,10 @@ def computar_primero_alternas(producciones):
                         actualizado = True  # Marca que hubo una actualización
                 else:
                     # Utiliza expresiones regulares para separar los símbolos, incluyendo paréntesis
-                    simbolos = re.findall(r'\w+|[()]', produccion)
+                    # La expresión re.findall(r'\w+|[()]', produccion) se utiliza para dividir una cadena produccion en partes utilizando una expresión regular
+                    # El propósito de esta expresión regular es dividir la producción en una lista de símbolos, donde cada símbolo es una palabra (formada por caracteres alfanuméricos) o un paréntesis. 
+                    # Esto es útil para analizar y procesar las producciones que contienen paréntesis o palabras como símbolos.
+                    simbolos = re.findall(r'\w+|[()]', produccion) 
                     for simbolo in simbolos:
                         if simbolo in producciones:
                             # Agrega los elementos del conjunto 'Primero' del símbolo actual al conjunto 'Primero' del no terminal actual, excepto 'epsilon'
