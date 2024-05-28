@@ -61,7 +61,7 @@ def computar_sig(producciones, primero):
 
     # Bucle infinito que se romperá cuando no haya más actualizaciones
     while True:
-        actualizado = False  # Bandera para verificar si hubo alguna actualización en esta iteración
+        actualizado = False  
 
         # Recorre cada no terminal y sus reglas de producción
         for no_terminal, reglas in producciones.items():
@@ -99,7 +99,7 @@ def computar_primero_alternas(producciones):
 
     # Bucle infinito que se romperá cuando no haya más actualizaciones
     while True:
-        actualizado = False  # Bandera para verificar si hubo alguna actualización en esta iteración
+        actualizado = False  
 
         # Recorre cada no terminal en las producciones
         for no_terminal in producciones:
@@ -151,7 +151,7 @@ def computar_siguiente_alternas(producciones, primero):
 
     # Bucle infinito que se romperá cuando no haya más actualizaciones
     while True:
-        actualizado = False  # Bandera para verificar si hubo alguna actualización en esta iteración
+        actualizado = False  
 
         # Recorre cada no terminal y sus reglas de producción
         for no_terminal, reglas in producciones.items():
