@@ -9,7 +9,7 @@ def computar_pr(producciones):
 
     # Bucle infinito que se romperá cuando no haya más actualizaciones
     while True:
-        actualizado = False  # Bandera para verificar si hubo alguna actualización en esta iteración
+        actualizado = False  
 
         # Recorre cada no terminal en las producciones
         for no_terminal in producciones:
